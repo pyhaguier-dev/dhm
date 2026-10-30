@@ -1,0 +1,547 @@
+   
+     
+       <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+    
+        
+<title>DH M</title>
+  
+<style>
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:white;
+    font-family:Arial,sans-serif;
+}
+
+
+
+/* SPHERE */
+
+
+#sphere{
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    overflow:hidden;
+}
+ 
+
+
+.sphereItem{
+    position:absolute;
+    left:50%;
+    transform:translate(-50%,-50%);
+    white-space:nowrap;
+
+}
+
+
+#openTime {
+   
+ position: fixed;
+    bottom: 2px;
+    right: 5px;
+    font-size: 4px;
+    color: white;
+    opacity: 0.7;
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div id="sphere"></div>
+
+  
+<script>
+
+// ======================================
+// DATA
+// ======================================
+const numbers = ["55711 59580 69736 63126 74611 70379 48072 69633 56294 69540","75841 80403 53392 81673 73367 468.702 263.683 378.182 444.331","65087 70008 87488 62974 307.273 287.308 390.430 401.647","268.641 365.062 275.655 362.844 397.609 433.888","76951 73821 58137 59164 70819 85599 71956 85277 58795 62056","250.073 467.649 444 454.783 267.008 67752 64997 26722 63886 70553","279.867 328.625 277.984 255.540 463.097 254.762 263.683 378.182 399.425","72634 80213 72331 68664 64605 68535 70008 87488 58961","307.273 353.610 401.647 251.186 336.581 287.308 321.305","76951 83929 59164 67939 81408 73821 79104 416.516 384.700 455.248","440.023 433.888 329.629 60508 57608 63926 62596 62056 80364 352.534","378.182 329.629 479.941 386.402 258.203 385.912 249.660 255.865 286.434","317.452 54973 73440 86087 63997 68967 48750 68973 75135 78673 69540 75637 75845 63345","80374 81542 78726 69852 55726 72083 81484 65838 87210 70491 67677 82047","446.030 318.758 465.455 274.480 433.888 306.338 456.545 406.935","255.865 385.912 286.434 54973 73440 86087 63997 68967 48750","68973 75135 78673 69540 75637 75845 63345 80374 81542 78726 69852 55726 72083","81484 65838 87210 70491 67677 82047 69616 73440 63997 68967 48750","68973 75135 78673 69540 75637 75845 63345 80374 81542 78726 69852","55726 72083 81484 65838 87210 70491 73439 87126 87240 73439 87126 87240","81016 69730 248.986 289.084 286.434 81072 57657 52711 71868 69929","45799 54966 38973 62093 60357 81443 56332 86166 55877 74105","44349 45731 48024 86563 84755 29125 80467 68902 46519"];
+  
+  
+     // ======================================
+
+const colors = [
+
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "indigo",
+    "violet"
+    
+];
+
+// ======================================
+// SPHERE
+// ======================================
+
+const levelCount = 33;
+
+let sphereItems = [];
+let sequenceForward = false;
+
+
+let phase = Math.PI;
+
+
+
+let colorIndex = 0;
+let previousDirection = 1;
+
+// ======================================
+// CREATE ITEM
+// ======================================
+function nextIndex(i){
+
+    return (
+        i + 1
+    ) % numbers.length;
+}
+
+function prevIndex(i){
+
+    return (
+        i - 1 +
+        numbers.length
+    ) % numbers.length;
+}
+function createTopItem(){
+
+    let newIndex;
+
+    if(
+        sphereItems.length === 0
+    ){
+
+        // Start from the LAST text
+        newIndex =
+            numbers.length - 1;
+
+    }
+    else{
+
+        newIndex =
+            prevIndex(
+                sphereItems[0].index
+            );
+    }
+
+    sphereItems.unshift({
+
+        index:
+            newIndex,
+
+        value:
+            String(
+                numbers[newIndex]
+            ),
+
+        color:
+            colors[colorIndex],
+
+        level:
+            0
+
+    });
+
+    colorIndex =
+        (colorIndex + 1)
+        %
+        colors.length;
+
+ 
+}
+
+function createBottomStartItem(){
+
+    const newIndex = 0;
+
+    sphereItems.push({
+
+        index:
+            newIndex,
+
+        value:
+            String(
+                numbers[newIndex]
+            ),
+
+        color:
+            colors[colorIndex],
+
+        level:
+            levelCount - 1
+
+    });
+
+    colorIndex =
+        (
+            colorIndex + 1
+        )
+        %
+        colors.length;
+}
+// ======================================
+// DRAW
+// ======================================
+
+
+
+function drawSphere(){
+
+    const sphere =
+        document.getElementById(
+            "sphere"
+        );
+
+    sphere.innerHTML = "";
+
+   
+    sphereItems.forEach(item => {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "sphereItem";
+
+        div.innerText =
+            item.value;
+
+        div.style.color =
+            item.color;
+
+      
+const lineHeight = 36;
+
+const y =
+     -10 +
+ item.level * lineHeight;
+
+
+        div.style.top =
+            y + "px";
+
+        div.style.left =
+            "50%";
+
+        div.style.transform =
+            "translate(-50%,-50%)";
+
+        const length =
+            String(
+                item.value
+            ).length;
+
+        const fontSize =
+            Math.max(
+              
+           
+
+  18,
+        36 - length * 0.5
+
+
+            );
+
+      div.style.fontSize = "24px";
+// div.style.fontSize =
+ //           fontSize + "px";
+       sphere.appendChild(div);
+
+    });
+}
+
+
+
+// ======================================
+// MOVEMENT
+// ======================================
+
+
+function moveForward(step){
+
+    sphereItems.forEach(item=>{
+        item.level += step;
+    });
+
+    sphereItems =
+        sphereItems.filter(
+            item => item.level < levelCount
+        );
+
+    if(
+        sphereItems.length === 0 ||
+        sphereItems[0].level >= 1
+    ){
+        createTopItem();
+    }
+}
+
+  
+function moveBackward(step){
+
+    sphereItems.forEach(item=>{
+        item.level -= step;
+    });
+
+    sphereItems =
+        sphereItems.filter(
+            item => item.level >= 0
+        );
+
+    if(
+        sphereItems.length === 0 ||
+        sphereItems[sphereItems.length-1].level <= levelCount-2
+    ){
+
+      
+colorIndex =
+    (
+        colorIndex - 1 +
+        colors.length
+    )
+    %
+    colors.length;
+
+
+const newIndex =
+
+    sphereItems.length === 0
+    ? numbers.length - 1
+    : nextIndex(
+        sphereItems[
+            sphereItems.length - 1
+        ].index
+    );
+
+sphereItems.push({
+
+    index:
+        newIndex,
+
+    value:
+        String(
+            numbers[newIndex]
+        ),
+
+    color:
+        colors[colorIndex],
+
+    level:
+        levelCount - 1
+
+});
+
+    }
+}
+
+// ======================================
+// SINUSOID
+// ======================================
+
+let previousTimestamp = null;
+
+function loop(timestamp){
+
+    if(previousTimestamp === null){
+        previousTimestamp = timestamp;
+    }
+
+    // Real elapsed time in seconds
+    let deltaTime =
+        (timestamp - previousTimestamp) / 1000;
+
+    previousTimestamp = timestamp;
+
+    // Prevent a huge jump if the browser stalls
+    deltaTime =
+        Math.min(deltaTime, 0.05);
+
+
+const cycleDuration =  177.6043360433;
+
+
+    // Completely time-based sinusoid
+    //
+    // Math.PI / cycleDuration means:
+    // one half-wave in cycleDuration seconds
+    // one complete sine cycle in 2 * cycleDuration seconds
+
+    phase +=
+        Math.PI *
+        deltaTime  /
+        cycleDuration;
+
+
+    const wave =
+        Math.sin(phase);
+  
+
+    const direction =
+        wave >= 0
+        ? 1
+        : -1;
+
+
+    const speed =
+        Math.abs(wave);
+
+
+const minInterval = 173.441734417344; 
+const maxInterval = 346.883468834688;
+const movementScale = 2775.0677506774;
+    const equivalentInterval =
+        maxInterval -
+        speed *
+        (
+            maxInterval -
+            minInterval
+        );
+
+
+    // ==========================================
+    // REAL-TIME MOVEMENT
+    // ==========================================
+
+    // Original calibration was:
+    //
+    // 30 / equivalentInterval per frame
+    //
+    // At 60 FPS this corresponds to:
+    //
+    // (30 / equivalentInterval) * 60
+    // levels per second.
+
+  const movementSpeed =
+    movementScale /
+    equivalentInterval;
+
+const step =
+    movementSpeed * deltaTime;
+
+
+    if(direction > 0){
+
+        moveForward(step);
+
+    }
+    else{
+
+        moveBackward(step);
+
+    }
+
+
+    drawSphere();
+
+
+    requestAnimationFrame(
+        loop
+    );
+}
+// ======================================
+// FULLSCREEN
+// ======================================
+
+function enterFullscreen(){
+
+    if(
+      !document.fullscreenElement
+    ){
+
+        document
+        .documentElement
+        .requestFullscreen()
+        .catch(()=>{});
+    }
+}
+
+document.addEventListener(
+    "click",
+    enterFullscreen,
+    {once:true}
+);
+
+document.addEventListener(
+    "touchstart",
+    enterFullscreen,
+    {once:true}
+);
+
+// ======================================
+// START
+// ======================================
+
+window.addEventListener(
+    "load",
+    ()=>{
+keepScreenAwake();
+
+  //const openedAt = new Date();
+   // document.getElementById("openTime").textContent =
+      // openedAt.toLocaleString();    
+
+
+
+createBottomStartItem();
+drawSphere();
+
+        requestAnimationFrame(
+            loop
+        );
+    }
+);
+      
+let wakeLock = null;
+
+async function keepScreenAwake() {
+    try {
+        wakeLock = await navigator.wakeLock.request("screen");
+
+        wakeLock.addEventListener("release", () => {
+            console.log("Wake Lock released");
+        });
+
+        console.log("Screen Wake Lock active");
+
+    } catch (err) {
+        console.log("Wake Lock error:", err);
+    }
+}
+
+document.addEventListener("visibilitychange", async () => {
+
+    if (
+        wakeLock !== null &&
+        document.visibilityState === "visible"
+    ) {
+        await keepScreenAwake();
+    }
+
+});
+
+</script>
+
+</body>
+</html>      
